@@ -17,6 +17,10 @@ class NotesViewModel(
         noteRepository.addNewNote(note)
     }
 
+    fun updateNote(note: Note) = viewModelScope.launch(Dispatchers.IO) {
+        noteRepository.updateNote(note)
+    }
+
     fun deleteNote(note: Note) = viewModelScope.launch(Dispatchers.IO) {
         noteRepository.deleteNote(note)
     }

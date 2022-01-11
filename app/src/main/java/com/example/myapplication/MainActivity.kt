@@ -4,11 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,14 +22,21 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.myapplication.MyApplication
+import com.example.myapplication.R
 import com.example.myapplication.data.model.Note
+import com.example.myapplication.navigation.Navigation
+import com.example.myapplication.routes.Route
+import com.example.myapplication.ui.screens.addnote.AddNotesScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.viewmodel.NotesViewModel
 import com.example.myapplication.viewmodel.NotesViewModelFactory
@@ -42,52 +50,46 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             MyApplicationTheme {
-                // A surface container using the 'background' color from the theme
-                HomeScreen(notesViewModel = notesViewModel)
+                Navigation(notesViewModel = notesViewModel)
             }
         }
     }
 }
 
 @Composable
-fun MyFabButton(notesViewModel: NotesViewModel) {
+fun MyFabButton(navController: NavHostController) {
     FloatingActionButton(
-        backgroundColor = Color.Red,
-        onClick = { addNote(notesViewModel) }
+        onClick = { navController.navigate(Route.ADD_NOTE_SCREEN) }
     ) {
         Icon(Icons.Filled.Add, "Add New Note")
     }
 }
 
-private fun addNote(notesViewModel: NotesViewModel) {
-    notesViewModel.addNewNote(Note("Some Title #1", ("hello World").repeat(96)))
-}
-
 @Composable
-fun HomeScreen(notesViewModel: NotesViewModel) {
+fun HomeScreen(notesViewModel: NotesViewModel, navController: NavHostController) {
     Scaffold(
         floatingActionButton = {
-            MyFabButton(notesViewModel = notesViewModel)
+            MyFabButton(navController)
         }
     ) {
-        NotesList(notesViewModel = notesViewModel)
+        NotesList(notesViewModel, navController)
     }
 }
 
 @Composable
-fun NotesList(notesViewModel: NotesViewModel) {
+fun NotesList(notesViewModel: NotesViewModel, navController: NavHostController) {
     val listOfNotes = notesViewModel.getAllNotes.observeAsState(listOf())
 
     LazyColumn(modifier = Modifier.padding(4.dp)) {
         items(items = listOfNotes.value) { note ->
-            NoteItemView(note = note, notesViewModel = notesViewModel)
+            NoteItemView(note = note, notesViewModel = notesViewModel, navController)
         }
     }
 }
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun NoteItemView(note: Note, notesViewModel: NotesViewModel) {
+fun NoteItemView(note: Note, notesViewModel: NotesViewModel, navController: NavHostController) {
 
     var expanded by remember { mutableStateOf(false) }
 
@@ -96,13 +98,19 @@ fun NoteItemView(note: Note, notesViewModel: NotesViewModel) {
             .padding(top = 16.dp, start = 16.dp, end = 16.dp)
             .fillMaxWidth()
             .combinedClickable(
-                onClick = {},
+                onClick = { navController.navigate(Route.EDIT_NOTE_SCREEN) },
                 onLongClick = { notesViewModel.deleteNote(note) }
             )
     ) {
         Row(modifier = Modifier
             .background(MaterialTheme.colors.primary)
             .padding(24.dp)
+            .animateContentSize(
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            )
             .fillMaxWidth()
         ) {
             Column(modifier = Modifier.weight(1f)) {

@@ -81,4 +81,7 @@ dependencies {
     // Material Icons Library (Extended)
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
 
+    // Compose Navigation
+    implementation "androidx.navigation:navigation-compose:2.4.0-beta02"
+
 }
