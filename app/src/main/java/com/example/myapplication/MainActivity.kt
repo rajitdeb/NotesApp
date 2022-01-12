@@ -98,7 +98,7 @@ fun NoteItemView(note: Note, notesViewModel: NotesViewModel, navController: NavH
             .padding(top = 16.dp, start = 16.dp, end = 16.dp)
             .fillMaxWidth()
             .combinedClickable(
-                onClick = { navController.navigate(Route.EDIT_NOTE_SCREEN) },
+                onClick = { navController.navigate("${Route.EDIT_NOTE_SCREEN}/${note.id}") },
                 onLongClick = { notesViewModel.deleteNote(note) }
             )
     ) {

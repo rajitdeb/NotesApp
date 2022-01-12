@@ -5,13 +5,21 @@ import com.example.myapplication.MyApplication
 import com.example.myapplication.data.model.Note
 import com.example.myapplication.repository.NoteRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class NotesViewModel(
     private val noteRepository: NoteRepository
     ): ViewModel() {
 
     val getAllNotes: LiveData<List<Note>> = noteRepository.getAllNotes
+
+    val getNote: MutableLiveData<Note> = MutableLiveData()
+
+    fun getNoteById(noteId: Int) = viewModelScope.launch {
+        getNote.value = noteRepository.getNoteById(noteId)
+    }
 
     fun addNewNote(note: Note) = viewModelScope.launch(Dispatchers.IO) {
         noteRepository.addNewNote(note)
