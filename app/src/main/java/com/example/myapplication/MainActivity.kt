@@ -21,22 +21,14 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.myapplication.MyApplication
-import com.example.myapplication.R
 import com.example.myapplication.data.model.Note
 import com.example.myapplication.navigation.Navigation
-import com.example.myapplication.routes.Route
-import com.example.myapplication.ui.screens.addnote.AddNotesScreen
+import com.example.myapplication.route.Routes
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.viewmodel.NotesViewModel
 import com.example.myapplication.viewmodel.NotesViewModelFactory
@@ -59,7 +51,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyFabButton(navController: NavHostController) {
     FloatingActionButton(
-        onClick = { navController.navigate(Route.ADD_NOTE_SCREEN) }
+        onClick = { navController.navigate(Routes.ADD_NOTES_SCREEN) }
     ) {
         Icon(Icons.Filled.Add, "Add New Note")
     }
@@ -98,7 +90,7 @@ fun NoteItemView(note: Note, notesViewModel: NotesViewModel, navController: NavH
             .padding(top = 16.dp, start = 16.dp, end = 16.dp)
             .fillMaxWidth()
             .combinedClickable(
-                onClick = { navController.navigate("${Route.EDIT_NOTE_SCREEN}/${note.id}") },
+                onClick = { navController.navigate("${Routes.EDIT_NOTE_SCREEN}/${note.id}") },
                 onLongClick = { notesViewModel.deleteNote(note) }
             )
     ) {

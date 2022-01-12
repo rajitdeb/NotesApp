@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.screens.editnote
+package com.example.myapplication.ui.screens.addnote
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -17,8 +17,7 @@ import com.example.myapplication.route.Routes
 import com.example.myapplication.viewmodel.NotesViewModel
 
 @Composable
-fun EditNoteScreen(
-    noteToUpdate: Note?,
+fun AddNotesScreen(
     notesViewModel: NotesViewModel,
     navController: NavHostController
 ) {
@@ -26,11 +25,11 @@ fun EditNoteScreen(
     val context = LocalContext.current
 
     var noteTitleText by remember {
-        mutableStateOf(noteToUpdate?.noteTitle ?: "")
+        mutableStateOf("")
     }
 
     var noteDescriptionText by remember {
-        mutableStateOf(noteToUpdate?.noteDescription ?: "")
+        mutableStateOf("")
     }
 
     Scaffold {
@@ -60,21 +59,26 @@ fun EditNoteScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(onClick = {
-                noteToUpdate?.noteTitle = noteTitleText
-                noteToUpdate?.noteDescription = noteDescriptionText
-
-                notesViewModel.updateNote(noteToUpdate!!)
+            Button(
+                onClick = {
+               val note = Note(
+                   noteTitleText,
+                   noteDescriptionText
+               )
+                notesViewModel.addNewNote(note)
                 Toast.makeText(
                     context,
-                    "Note Updated",
+                    "Note Saved",
                     Toast.LENGTH_SHORT
                 ).show()
                 navController.navigate(Routes.HOME_SCREEN)
-            }) {
-                Text(text = "Update Note")
+            },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Save Note")
             }
 
         }
     }
+
 }
